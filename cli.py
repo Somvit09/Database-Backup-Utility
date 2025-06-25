@@ -30,7 +30,8 @@ def cli():
 @click.option('--password', hide_input=True, confirmation_prompt=False, help='Database password')
 @click.option('--db-name', required=True, help='Database name', default="test_database")
 @click.option('--output', default=OUTPUT_DIR, help='Output directory for backup files')
-def backup(database_url, db_type, host, port, user, password, db_name, output):
+@click.option('--format', type=click.Choice(['sql', 'custom']), default='custom', help='Backup file format. sql for .sql & custom for .dump based files.')
+def backup(database_url, db_type, host, port, user, password, db_name, output, format):
     """Backup the specified database in a backup file"""
     click.echo(f"Testing connection on {db_type} database '{db_name}' at {host}:{port}.")
 
@@ -50,10 +51,10 @@ def backup(database_url, db_type, host, port, user, password, db_name, output):
                 raise click.UsageError("Missing required database parameters. Use either --database-url or provide individual options.")
 
             # validate user params
-            validator = Validation(host=host, port=port, user=user, password=password, db_name=db_name, output_dir=output)
+            validator = Validation(host=host, port=port, user=user, password=password, db_name=db_name, output_dir=output, format=format)
             validator.validate_user_params()
 
-            pg =  PostgresHandler(host=host, port=port, user=user, password=password, db_name=db_name, output_dir=output)
+            pg =  PostgresHandler(host=host, port=port, user=user, password=password, db_name=db_name, output_dir=output, format=format)
             try:
                 if pg.test_connection():
                     click.echo(f"Connected to {db_type} database successfully.")

@@ -2,13 +2,15 @@ import os
 from pathlib import Path
 
 class Validation:
-    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, output_dir: str = None):
+    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, format: str, output_dir: str = None):
         self.host = host
         self.port = port
         self.user = user
         self.password = password
         self.db_name = db_name
+        self.format = format
         self.output_dir = Path(output_dir) if output_dir else None
+        self.FORMATS = ['sql', 'custom']
 
         if self.output_dir:
             self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -33,6 +35,9 @@ class Validation:
         # DB name validation
         if not isinstance(self.db_name, str) or not self.db_name.strip():
             raise ValueError("Database name must be a non-empty string.")
+
+        if not isinstance(self.format, str) or not self.format.strip() or self.format not in self.FORMATS:
+            raise ValueError(f"format must be a non empty string and should be either {", ".join(self.FORMATS)}")
 
         # Output directory validation (optional)
         if self.output_dir:

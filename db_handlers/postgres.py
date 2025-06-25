@@ -4,12 +4,13 @@ from datetime import datetime
 from pathlib import Path
 
 class PostgresHandler:
-    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, output_dir: str):
+    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, output_dir: str, format: str):
         self.host = host.strip()
         self.port = port or 5432
         self.user = user
         self.password = password
         self.db_name = db_name
+        self.format = format
         if output_dir:
             self.output_dir = Path(output_dir)
             self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -75,7 +76,9 @@ class PostgresHandler:
         pg_dump_path = self._find_pg_dump()
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         safe_db_name = self.db_name.replace(" ", "_")
-        backup_file = self.output_dir / f"{safe_db_name}_backup_{timestamp}.sql"
+        extension = ".sql" if self.format == "sql" else ".dump"
+        pg_format = "p" if format == "sql" else "c"
+        backup_file = self.output_dir / f"{safe_db_name}_backup_{timestamp}{extension}"
 
         env = os.environ.copy()
         env["PGPASSWORD"] = self.password
@@ -89,7 +92,7 @@ class PostgresHandler:
             "-h", self.host,
             "-p", str(self.port),
             "-U", self.user,
-            "-F", "c",
+            "-F", pg_format,
             "-f", str(backup_file),
             self.db_name
         ]
