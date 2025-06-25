@@ -54,10 +54,22 @@ class PostgresHandler:
                 password=self.password,
                 dbname=self.db_name
             )
-            conn.close()
-            return True
+            if conn:
+                conn.close()
+                return True
+            return False
+        except psycopg2.OperationalError as e:
+            error_msg = str(e).lower()
+            if "does not exist" in error_msg:
+                raise Exception(f"Database '{self.db_name}' does not exist.")
+            elif "authentication failed" in error_msg:
+                raise Exception("Authentication failed. Please check your username or password.")
+            elif "could not connect to server" in error_msg or "connection refused" in error_msg:
+                raise Exception(f"Could not connect to the server at {self.host}:{self.port}. Is PostgreSQL running?")
+            else:
+                raise Exception(f"OperationalError: {e}")
         except Exception as e:
-            raise Exception(f"Connection test failed: {e}")
+            raise Exception(f"Unexpected connection error: {e}")
 
     def backup(self):
         pg_dump_path = self._find_pg_dump()
