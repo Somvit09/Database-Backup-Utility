@@ -10,7 +10,7 @@ class Validation:
         self.db_name = db_name
         self.format = format
         self.output_dir = Path(output_dir) if output_dir else None
-        self.FORMATS = ['sql', 'custom']
+        self.FORMATS = ['sql', 'dump']
 
         if self.output_dir:
             self.output_dir.mkdir(parents=True, exist_ok=True)

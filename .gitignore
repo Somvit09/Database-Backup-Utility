@@ -137,6 +137,7 @@ env.bak/
 venv.bak/
 venv_wsl/
 OUTPUT/
+logs/
 
 # Spyder project settings
 .spyderproject
