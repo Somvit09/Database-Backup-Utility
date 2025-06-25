@@ -77,7 +77,7 @@ class PostgresHandler:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         safe_db_name = self.db_name.replace(" ", "_")
         extension = ".sql" if self.format == "sql" else ".dump"
-        pg_format = "p" if format == "sql" else "c"
+        pg_format = "p" if self.format == "sql" else "c"
         backup_file = self.output_dir / f"{safe_db_name}_backup_{timestamp}{extension}"
 
         env = os.environ.copy()
