@@ -37,7 +37,7 @@ class Validation:
             raise ValueError("Database name must be a non-empty string.")
 
         if not isinstance(self.format, str) or not self.format.strip() or self.format not in self.FORMATS:
-            raise ValueError(f"format must be a non empty string and should be either {", ".join(self.FORMATS)}")
+            raise ValueError(f"format must be a non empty string and should be either {', '.join(self.FORMATS)}")
 
         # Output directory validation (optional)
         if self.output_dir:
