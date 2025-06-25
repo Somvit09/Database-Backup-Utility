@@ -46,6 +46,39 @@ class PostgresHandler:
 
         raise FileNotFoundError("pg_dump not found. Make sure PostgreSQL is installed and pg_dump is in your PATH.")
 
+    def _find_pg_restore_tool(self, format: str):
+        tool = "psql" if format == "sql" else "pg_restore"
+
+        tool_path = shutil.which(tool)
+        if tool_path:
+            return tool_path
+
+        system = platform.system()
+
+        if system == "Windows":
+            possible_paths = [
+                Path("C:/Program Files/PostgreSQL"),
+                Path("C:/Program Files (x86)/PostgreSQL"),
+            ]
+            for base in possible_paths:
+                if base.exists():
+                    for version_dir in base.iterdir():
+                        bin_path = version_dir / "bin" / f"{tool}.exe"
+                        if bin_path.exists():
+                            return str(bin_path)
+
+        elif system in ("Linux", "Darwin"):
+            possible_paths = [
+                f"/usr/bin/{tool}",
+                f"/usr/local/bin/{tool}",
+                f"/opt/homebrew/bin/{tool}",
+            ]
+            for path in possible_paths:
+                if Path(path).exists():
+                    return path
+
+        raise FileNotFoundError(f"{tool} not found. Make sure PostgreSQL is installed and {tool} is in your PATH.")
+
     def test_connection(self):
         try:
             conn = psycopg2.connect(
@@ -103,18 +136,33 @@ class PostgresHandler:
 
 
     def restore(self, backup_file):
-        env = {"PGPASSWORD": self.password}
-        command = [
-            "pg_restore",
-            "-h", self.host,
-            "-p", str(self.port),
-            "-U", self.user,
-            "-d", self.db_name,
-            "-c",
-            str(backup_file)
-        ]
+        env = os.environ.copy()
+        env["PGPASSWORD"] = self.password
+        restore_tool = self._find_pg_restore_tool(self.format)
+
+        if str(backup_file).endswith(".sql") or self.format == "sql":
+            command = [
+                restore_tool,
+                "-h", self.host,
+                "-p", str(self.port),
+                "-U", self.user,
+                "-f", str(backup_file),
+                "-d", self.db_name
+            ]
+        else:
+            command = [
+                restore_tool,
+                "-h", self.host,
+                "-p", str(self.port),
+                "-U", self.user,
+                "-d", self.db_name,
+                "-c",
+                str(backup_file)
+            ]
 
         try:
-            subprocess.run(command, env=env, check=True)
+            result = subprocess.run(command, env=env, capture_output=True, text=True)
+            if result.returncode != 0:
+                raise Exception(f"Restore failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
         except subprocess.CalledProcessError as e:
-            raise Exception(f"Restore failed: {e}")
+            raise Exception(f"Restore process error: {e}")

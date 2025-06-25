@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 class Validation:
-    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, format: str, output_dir: str = None):
+    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, format: str, output_dir: str = None, backup_file: str = None):
         self.host = host
         self.port = port
         self.user = user
@@ -10,6 +10,7 @@ class Validation:
         self.db_name = db_name
         self.format = format
         self.output_dir = Path(output_dir) if output_dir else None
+        self.backup_file = Path(backup_file) if backup_file else None
         self.FORMATS = ['sql', 'dump']
 
         if self.output_dir:
@@ -39,11 +40,16 @@ class Validation:
         if not isinstance(self.format, str) or not self.format.strip() or self.format not in self.FORMATS:
             raise ValueError(f"format must be a non empty string and should be either {', '.join(self.FORMATS)}")
 
-        # Output directory validation (optional)
         if self.output_dir:
             if not isinstance(self.output_dir, Path):
                 raise TypeError("Output directory must be a Path object.")
             if not self.output_dir.exists():
                 raise FileNotFoundError(f"Output directory '{self.output_dir}' does not exist.")
+
+        if self.backup_file:
+            if not isinstance(self.backup_file, Path):
+                raise TypeError("backup_file must be a Path object.")
+            if not self.backup_file.exists():
+                raise FileNotFoundError(f"backup_file '{self.backup_file}' does not exist.")
 
         return True
