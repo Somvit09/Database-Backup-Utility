@@ -3,8 +3,9 @@ from logger import setup_logger
 from urllib.parse import urlparse
 from .postgres import *
 from validation import Validation
+from pathlib import Path
 
-logger = setup_logger("backup")
+logger = setup_logger("logs")
 
 
 def fetch_database_params_and_validate(db_type: str, database_url: str, host: str, port: int, password: str, db_name: str, format: str, user: str, output: str = None, backup_file: str = None):
@@ -46,7 +47,10 @@ def backup_postgres_database(db_type: str, database_url: str, host: str, port: i
             start_time = time.time()
             backup_file_path = pg.backup()
             end_time = time.time()
-            logger.info(f"Backup file saved at: {backup_file_path}. Total time taken: {round((end_time-start_time)/60, 6)} minutes.")
+            output_dirname = Path(output).name
+            filename = Path(backup_file_path).name
+            relative_path_str = f"{output_dirname}\\{filename}"
+            logger.info(f"Backup file saved at: {relative_path_str}. Total time taken: {round((end_time-start_time)/60, 6)} minutes.")
         else:
             logger.error(f"Failed to connect to the database {db_name}.")
             raise Exception(f"Failed to connect to the database {db_name}.")

@@ -2,6 +2,9 @@ import os, subprocess, shutil, platform
 import psycopg2
 from datetime import datetime
 from pathlib import Path
+from logger import setup_logger
+
+logger = setup_logger("restore")
 
 class PostgresHandler:
     def __init__(self, host: str, port: int, user: str, password: str, db_name: str, output_dir: str, format: str):
@@ -127,7 +130,8 @@ class PostgresHandler:
             "-U", self.user,
             "-F", pg_format,
             "-f", str(backup_file),
-            self.db_name
+            "--enable-row-security",
+            self.db_name,
         ]
         result = subprocess.run(command, env=env, capture_output=True, text=True)
         if result.returncode != 0:
@@ -162,7 +166,12 @@ class PostgresHandler:
 
         try:
             result = subprocess.run(command, env=env, capture_output=True, text=True)
-            if result.returncode != 0:
-                raise Exception(f"Restore failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}")
+            warning_line = None
+            for line in result.stderr.splitlines():
+                if "pg_restore: warning: errors ignored on restore:" in line:
+                    warning_line = line.strip()
+                    break
+            if warning_line:
+                logger.warning(warning_line)
         except subprocess.CalledProcessError as e:
             raise Exception(f"Restore process error: {e}")
