@@ -1,7 +1,11 @@
 {
     "cSpell.words": [
+        "bson",
         "levelname",
+        "mongodump",
+        "mongorestore",
         "psycopg",
+        "pymongo",
         "secho"
     ]
 }

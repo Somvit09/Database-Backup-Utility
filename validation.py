@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 class Validation:
-    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, format: str, output_dir: str = None, backup_file: str = None):
+    def __init__(self, host: str, port: int, user: str, password: str, db_name: str, format: str, collection_name: str = None, output_dir: str = None, backup_file: str = None, backup_dir: str = None):
         self.host = host
         self.port = port
         self.user = user
@@ -11,7 +11,9 @@ class Validation:
         self.format = format
         self.output_dir = Path(output_dir) if output_dir else None
         self.backup_file = Path(backup_file) if backup_file else None
-        self.FORMATS = ['sql', 'dump']
+        self.backup_dir = Path(backup_dir) if backup_dir else None
+        self.collection_name = collection_name if collection_name else None
+        self.FORMATS = ['sql', 'dump', 'bson']
 
         if self.output_dir:
             self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -36,6 +38,10 @@ class Validation:
         # DB name validation
         if not isinstance(self.db_name, str) or not self.db_name.strip():
             raise ValueError("Database name must be a non-empty string.")
+
+        # collection name validation
+        if self.collection_name and not isinstance(self.collection_name, str):
+            raise ValueError("Collection name must be a non-empty string.")
 
         if not isinstance(self.format, str) or not self.format.strip() or self.format not in self.FORMATS:
             raise ValueError(f"format must be a non empty string and should be either {', '.join(self.FORMATS)}")

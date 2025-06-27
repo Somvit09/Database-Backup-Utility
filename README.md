@@ -112,6 +112,60 @@ Logs are written to `logs/backup.log` with the following format:
 
 ---
 
+
+## 🍃 MongoDB Usage
+
+### ✅ Backup
+
+```bash
+python cli.py backup --db-type mongodb --database-url mongodb+srv://<user>:<password>@<cluster-url>/<db_name>
+```
+
+Example (full database):
+
+```bash
+python cli.py backup --db-type mongodb --database-url mongodb+srv://sam:sam@mypersonalcluster.ogdhacv.mongodb.net/test_database
+```
+
+Example (specific collection):
+
+```bash
+python cli.py backup --db-type mongodb --database-url mongodb+srv://sam:sam@mypersonalcluster.ogdhacv.mongodb.net/test_database --collection-name movies
+```
+
+### ♻️ Restore
+
+```bash
+python cli.py restore --db-type mongodb --database-url mongodb://<user>:<password>@<host>:<port>/<db_name>?authSource=admin --dir-path <path-to-backup-folder>
+```
+
+Example (restore entire DB):
+
+```bash
+python cli.py restore --database-url mongodb+srv://sam:sam@mypersonalcluster.mongodb.net/test_database --db-type mongodb --dir-path OUTPUT/test_database_backup_20250627_170713/
+```
+
+Example (restore specific collection):
+
+```bash
+python cli.py restore --db-type mongodb --database-url mongodb://sam:sam@localhost:27017/test_database?authSource=admin --collection-name movies --dir-path OUTPUT/test_database_movies_backup_20250627_170629/
+```
+
+### 🪵 MongoDB Logs
+
+```
+2025-06-27 17:06:28,268 - INFO - Testing MongoDB connection to 'test_database' at mypersonalcluster.ogdhacv.mongodb.net:27017.
+2025-06-27 17:06:29,216 - INFO - Successfully connected to MongoDB server.
+2025-06-27 17:06:29,259 - INFO - Database 'test_database' exists.
+2025-06-27 17:06:29,299 - INFO - Collection 'movies' exists in database 'test_database'.
+2025-06-27 17:06:29,334 - INFO - Started taking backup......
+2025-06-27 17:06:47,538 - INFO - Backup completed. Saved to OUTPUT/test_database_movies_backup_20250627_170629. Time: 0.303 minutes.
+```
+
+📝 You can back up the entire database or a specific collection by using `--collection-name`.
+
+
+
 ## 📂 Project Structure
 
 ```

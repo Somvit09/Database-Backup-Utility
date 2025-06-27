@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from logger import setup_logger
 
-logger = setup_logger("restore")
+logger = setup_logger("logs")
 
 class PostgresHandler:
     def __init__(self, host: str, port: int, user: str, password: str, db_name: str, output_dir: str, format: str):
