@@ -174,7 +174,13 @@ DATABASE-BACKUP-UTILITY/
 ├── cli.py
 ├── logger.py
 ├── db_handlers/
+│   ├── init.py
+│   ├── mongodb_handler/
+│   │   ├── init.py
+│   │   ├── methods.py
+│   │   └── mongodb.py
 │   └── postgres_handlers/
+│       ├── init.py
 │       ├── methods.py
 │       └── postgres.py
 ├── logs/
@@ -182,7 +188,10 @@ DATABASE-BACKUP-UTILITY/
 ├── OUTPUT/
 ├── validation.py
 ├── requirements.txt
-└── README.md
+├── LICENSE
+├── .gitignore
+├── README.md
+
 ```
 
 ---
