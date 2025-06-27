@@ -124,13 +124,13 @@ python cli.py backup --db-type mongodb --database-url mongodb+srv://<user>:<pass
 Example (full database):
 
 ```bash
-python cli.py backup --db-type mongodb --database-url mongodb+srv://sam:sam@mypersonalcluster.ogdhacv.mongodb.net/test_database
+python cli.py backup --db-type mongodb --database-url mongodb+srv://<user>:<password>@<cluster-url>/<db_name>
 ```
 
 Example (specific collection):
 
 ```bash
-python cli.py backup --db-type mongodb --database-url mongodb+srv://sam:sam@mypersonalcluster.ogdhacv.mongodb.net/test_database --collection-name movies
+python cli.py backup --db-type mongodb --database-url mongodb+srv://<user>:<password>@<cluster-url>/<db_name> --collection-name movies
 ```
 
 ### ♻️ Restore
@@ -142,13 +142,13 @@ python cli.py restore --db-type mongodb --database-url mongodb://<user>:<passwor
 Example (restore entire DB):
 
 ```bash
-python cli.py restore --database-url mongodb+srv://sam:sam@mypersonalcluster.mongodb.net/test_database --db-type mongodb --dir-path OUTPUT/test_database_backup_20250627_170713/
+python cli.py restore --database-url mongodb+srv://<user>:<password>@<cluster-url>/<db_name> --db-type mongodb --dir-path OUTPUT/test_database_backup_20250627_170713/
 ```
 
 Example (restore specific collection):
 
 ```bash
-python cli.py restore --db-type mongodb --database-url mongodb://sam:sam@localhost:27017/test_database?authSource=admin --collection-name movies --dir-path OUTPUT/test_database_movies_backup_20250627_170629/
+python cli.py restore --db-type mongodb --database-url mongodb+srv://<user>:<password>@<cluster-url>/<db_name>?authSource=admin --collection-name movies --dir-path OUTPUT/test_database_movies_backup_20250627_170629/
 ```
 
 ### 🪵 MongoDB Logs
